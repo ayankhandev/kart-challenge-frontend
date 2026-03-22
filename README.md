@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modern POS Interface
 
-## Getting Started
+A highly optimized, fully responsive Point of Sale (POS) frontend built with **Next.js 16 (App Router)** and **Tailwind CSS v4**.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Modern Architecture**: Beautiful glassmorphism UI with vibrant colors.
+- **Production React**: Implements IntersectionObserver infinite scrolling for massive product datasets.
+- **Robust State Management**: Powered by **Zustand** for rock-solid, persistent shopping cart state matching across tabs/reloads.
+- **Seamless Integration**: Automatically syncs cart logic, promo codes, and ordering flows with the NestJS backend dynamically.
+- **Mobile First**: Shrinks from an expansive two-panel checkout experience on desktops down into a sleek floating action button on mobile.
+
+## Quick Start
+
+### 1. Configure Backend URL
+Create a `.env` or `.env.local` file in the root of the project to map your NestJS backend:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*(By default, the backend runs on port 3000).*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Install Packages
+We recommend using `pnpm` specifically to match the repo's internal caching structure.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. Run the Development Server
+```bash
+pnpm dev
+```
+Open [http://localhost:3001](http://localhost:3001) with your browser to launch the beautiful modern POS terminal system.
