@@ -121,8 +121,9 @@ export function ProductGrid() {
                   onClick={() => {
                     if (!inCart) addToCart(product);
                   }}
+                  // Using ring-inset so the border overlaps perfectly with the image radius
                   className={`aspect-[4/3] w-full relative rounded-2xl overflow-visible cursor-pointer transition-all duration-300 hover:shadow-xl ${
-                    inCart ? "border-2 border-primary ring-2 ring-primary/20 shadow-md" : "border border-border hover:border-primary/40 bg-card"
+                    inCart ? "ring-2 ring-inset ring-primary shadow-md" : "border border-border hover:border-primary/40 bg-card"
                   }`}
                 >
                   <img
@@ -132,29 +133,32 @@ export function ProductGrid() {
                     className="object-cover w-full h-full rounded-2xl"
                   />
                   
+                  {/* Highlight overlay for inCart to smooth edges if needed */}
+                  {inCart && <div className="absolute inset-0 rounded-2xl ring-2 ring-inset ring-primary pointer-events-none" />}
+                  
                   {/* Action Controllers Centered on Bottom Border */}
-                  <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-20 w-max">
+                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-20 w-[80%] flex justify-center">
                     {inCart ? (
-                      <div className="flex items-center bg-background shadow-lg rounded-full px-1.5 py-1.5 border border-border">
+                      <div className="flex items-center justify-between w-full bg-primary text-primary-foreground shadow-xl rounded-full p-1.5 h-12">
                         <button 
                           onClick={(e) => { 
                             e.stopPropagation(); 
                             if (quantity === 1) removeItem(product.id); 
                             else updateQuantity(product.id, -1); 
                           }}
-                          className="w-8 h-8 rounded-full bg-muted shadow-sm flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors text-foreground"
+                          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors"
                         >
-                          <Minus className="w-4 h-4" />
+                          <Minus className="w-5 h-5" />
                         </button>
-                        <span className="font-bold w-8 text-center text-foreground">{quantity}</span>
+                        <span className="font-bold flex-1 text-center text-lg">{quantity}</span>
                         <button 
                           onClick={(e) => { 
                             e.stopPropagation(); 
                             updateQuantity(product.id, 1); 
                           }}
-                          className="w-8 h-8 rounded-full bg-primary text-primary-foreground shadow-sm flex items-center justify-center hover:bg-primary/90 transition-colors"
+                          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors"
                         >
-                          <Plus className="w-4 h-4" />
+                          <Plus className="w-5 h-5" />
                         </button>
                       </div>
                     ) : (
@@ -163,10 +167,10 @@ export function ProductGrid() {
                           e.stopPropagation();
                           addToCart(product);
                         }}
-                        className="flex items-center gap-2 bg-background hover:bg-muted text-foreground border border-border shadow-lg px-4 py-2.5 rounded-full font-semibold text-sm transition-all active:scale-95 group-hover:border-primary group-hover:text-primary"
+                        className="flex items-center justify-center w-full gap-2 bg-background hover:bg-muted text-foreground border border-border shadow-lg px-4 h-12 rounded-full font-semibold text-sm transition-all active:scale-95 group-hover:border-primary group-hover:text-primary"
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        Add to Cart
+                        <span className="truncate">Add to Cart</span>
                       </button>
                     )}
                   </div>
@@ -174,6 +178,7 @@ export function ProductGrid() {
                 
                 {/* Transparent, left-aligned text details */}
                 <div className="pt-2 text-left bg-transparent">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{product.category}</span>
                   <h3 className="font-bold text-lg leading-tight mb-1 text-foreground truncate">{product.name}</h3>
                   <p className="font-semibold text-primary">${product.price.toFixed(2)}</p>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { XCircle, Loader2 } from "lucide-react";
+import { XCircle, Loader2, CheckCircle2 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 
 interface OrderConfirmedModalProps {
@@ -60,7 +60,7 @@ export function OrderConfirmedModal({ isOpen, onClose }: OrderConfirmedModalProp
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in">
-      <div className="bg-card w-full max-w-md rounded-[2rem] p-8 flex flex-col items-center text-center shadow-2xl relative overflow-hidden transform transition-all scale-100">
+      <div className="bg-card w-full max-w-lg rounded-[2rem] p-8 flex flex-col items-center text-center shadow-2xl relative overflow-hidden transform transition-all scale-100">
         
         {status === "loading" && (
           <>
@@ -86,9 +86,12 @@ export function OrderConfirmedModal({ isOpen, onClose }: OrderConfirmedModalProp
 
         {status === "success" && (
           <div className="w-full flex flex-col items-start text-left">
+            <div className="w-full flex justify-center mb-6">
+              <CheckCircle2 className="w-24 h-24 text-green-500" />
+            </div>
             
-            <h2 className="text-3xl font-extrabold mb-2 text-foreground w-full">Order Confirmed</h2>
-            <p className="text-muted-foreground mb-6 w-full">We hope you enjoy your food!</p>
+            <h2 className="text-3xl font-extrabold mb-2 text-foreground w-full text-center">Order Confirmed</h2>
+            <p className="text-muted-foreground mb-6 w-full text-center">We hope you enjoy your food!</p>
             
             <div className="w-full text-left bg-muted/50 rounded-2xl p-4 mb-6 max-h-[35vh] overflow-y-auto">
               {cart.map(item => (

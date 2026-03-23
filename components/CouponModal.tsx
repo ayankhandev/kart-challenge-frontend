@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Ticket } from "lucide-react";
 
 interface CouponModalProps {
@@ -13,8 +14,13 @@ export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +58,7 @@ export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
@@ -97,7 +103,7 @@ export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
           <button
             type="submit"
             disabled={isVerifying}
-            className="w-full flex items-center justify-center bg-foreground text-background py-4 rounded-2xl font-bold text-lg hover:opacity-90 transition-opacity active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center bg-primary text-primary-foreground py-4 rounded-2xl font-bold text-lg hover:bg-primary/90 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-primary/20"
           >
             {isVerifying ? (
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-background"></div>
@@ -107,6 +113,7 @@ export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
