@@ -13,7 +13,7 @@ export function useProducts(selectedCategory: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [knownCategories, setKnownCategories] = useState<Set<string>>(new Set(["All"]));
 
   const observer = useRef<IntersectionObserver | null>(null);
