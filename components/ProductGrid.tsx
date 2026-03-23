@@ -1,91 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Product } from "@/types";
+import { useState } from "react";
 import { Plus, Minus, Search, ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useProducts } from "@/hooks/useProducts";
 
 export function ProductGrid() {
   const { cart, addToCart, removeItem, updateQuantity } = useCartStore();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [knownCategories, setKnownCategories] = useState<Set<string>>(new Set(["All"]));
-
-
-
-  const observer = useRef<IntersectionObserver | null>(null);
-
-  const lastProductElementRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prev) => prev + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
-
-  useEffect(() => {
-    setPage(1);
-    setProducts([]);
-    setHasMore(true);
-  }, [selectedCategory]);
+  const { products, loading, knownCategories, lastProductRef } = useProducts(selectedCategory);
 
   const handleCategoryChange = (category: string) => {
     if (category === selectedCategory) return;
     setSelectedCategory(category);
-    setPage(1);
-    setProducts([]);
-    setHasMore(true);
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    async function fetchProducts() {
-      setLoading(true);
-      try {
-        const catQuery = selectedCategory !== "All" ? `&category=${encodeURIComponent(selectedCategory)}` : "";
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
-        const res = await fetch(`${baseUrl}/products?page=${page}&limit=8${catQuery}`);
-        
-        if (res.ok) {
-          const json = await res.json();
-          if (isMounted) {
-            setProducts((prev) => {
-               if (page === 1) return json.data;
-               const existingIds = new Set(prev.map(p => p.id));
-               const newItems = json.data.filter((p: Product) => !existingIds.has(p.id));
-               return [...prev, ...newItems];
-            });
-            setHasMore(json.meta.page < json.meta.totalPages);
-            
-            setKnownCategories((prev) => {
-              const next = new Set(prev);
-              json.data.forEach((p: Product) => next.add(p.category));
-              return next;
-            });
-          }
-        }
-      } catch (err) {
-        // Quietly fail
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-    fetchProducts();
-    return () => {
-      isMounted = false;
-    };
-  }, [page, selectedCategory]);
-
-  const categoryArray = Array.from(knownCategories);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 lg:p-8 pb-32 lg:pb-8 animate-in">
@@ -114,7 +42,7 @@ export function ProductGrid() {
             return (
               <div
                 key={product.id}
-                ref={isLast ? lastProductElementRef : null}
+                ref={isLast ? lastProductRef : null}
                 className="group relative flex flex-col gap-3"
               >
                 <div 
@@ -126,12 +54,16 @@ export function ProductGrid() {
                     inCart ? "ring-2 ring-inset ring-primary shadow-md" : "border border-border hover:border-primary/40 bg-card"
                   }`}
                 >
-                  <img
-                    src={product.image.thumbnail}
-                    alt={product.name}
-                    loading="lazy"
-                    className="object-cover w-full h-full rounded-2xl"
-                  />
+                  <picture className="w-full h-full block">
+                    <source media="(min-width: 1024px)" srcSet={product.image.desktop} />
+                    <source media="(min-width: 768px)" srcSet={product.image.tablet} />
+                    <img
+                      src={product.image.mobile}
+                      alt={product.name}
+                      loading="lazy"
+                      className="object-cover w-full h-full rounded-2xl"
+                    />
+                  </picture>
                   
                   {/* Highlight overlay for inCart to smooth edges if needed */}
                   {inCart && <div className="absolute inset-0 rounded-2xl ring-2 ring-inset ring-primary pointer-events-none" />}

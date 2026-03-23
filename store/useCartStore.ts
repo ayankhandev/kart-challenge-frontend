@@ -6,8 +6,8 @@ interface CartState {
   cart: CartItem[];
   couponCode: string | null;
   addToCart: (product: Product) => void;
-  updateQuantity: (id: string, delta: number) => void;
-  removeItem: (id: string) => void;
+  updateQuantity: (id: number, delta: number) => void;
+  removeItem: (id: number) => void;
   clearCart: () => void;
   applyCoupon: (code: string) => void;
   removeCoupon: () => void;

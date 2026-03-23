@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, Ticket } from "lucide-react";
+import { usePromoValidation } from "@/hooks/usePromoValidation";
 
 interface CouponModalProps {
   isOpen: boolean;
@@ -12,9 +13,8 @@ interface CouponModalProps {
 
 export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { validatePromo, isVerifying, error, clearError } = usePromoValidation();
 
   useEffect(() => {
     setMounted(true);
@@ -24,37 +24,10 @@ export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = code.trim();
-    if (trimmed.length < 8 || trimmed.length > 10) {
-      setError("Coupon code must be between 8 and 10 characters.");
-      return;
-    }
-    
-    setIsVerifying(true);
-    setError("");
-
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
-      const res = await fetch(`${baseUrl}/promo/validate/${trimmed}`);
-      if (!res.ok) {
-        if (res.status === 503) {
-           setError("Promo service is unavailable right now.");
-        } else {
-           setError("Invalid promo code formatting.");
-        }
-        return;
-      }
-      const data = await res.json();
-      if (data.valid) {
-        onApply(trimmed);
-        setCode("");
-      } else {
-        setError(`The code ${trimmed} is not valid.`);
-      }
-    } catch (err) {
-      setError("Failed to verify promo code. Please check your connection.");
-    } finally {
-      setIsVerifying(false);
+    const valid = await validatePromo(code);
+    if (valid) {
+      onApply(code.trim());
+      setCode("");
     }
   };
 
@@ -91,7 +64,7 @@ export function CouponModal({ isOpen, onClose, onApply }: CouponModalProps) {
               value={code}
               onChange={(e) => {
                 setCode(e.target.value.toUpperCase());
-                if (error) setError("");
+                if (error) clearError();
               }}
               placeholder="e.g. SUMMER20"
               className="w-full bg-muted border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-2xl px-5 py-4 text-xl font-bold tracking-widest placeholder:text-muted-foreground/40 transition-all outline-none"
